@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/go-chi/chi"
+	"github.com/mkermilska/rentals-challenge/pkg/database"
 	"github.com/mkermilska/rentals-challenge/pkg/service"
 )
 
@@ -71,6 +73,132 @@ func (a *APIServer) getRentalByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorMsg := "Error parsing rental"
 		a.logger.Error(errorMsg, zap.Any("rental", rental), zap.Error(err))
+		http.Error(w, errorMsg, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(out)
+	if err != nil {
+		a.logger.Error("Error writing API response", zap.Error(err))
+	}
+}
+
+func (a *APIServer) getRentals(w http.ResponseWriter, r *http.Request) {
+	//reading the input params could be simplified with using a library.
+	queryParams := database.RentalParams{}
+	if r.URL.Query().Has("price_min") {
+		minPrice, err := strconv.Atoi(r.URL.Query().Get("price_min"))
+		if err != nil {
+			errorMsg := "Invalid value for price_min parameter"
+			a.logger.Error(errorMsg, zap.Error(err))
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.PriceMin = minPrice
+	}
+
+	if r.URL.Query().Has("price_max") {
+		maxPrice, err := strconv.Atoi(r.URL.Query().Get("price_max"))
+		if err != nil {
+			errorMsg := "Invalid value for price_max parameter"
+			a.logger.Error(errorMsg, zap.Error(err))
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.PriceMax = maxPrice
+	}
+
+	if r.URL.Query().Has("ids") {
+		IDs := r.URL.Query().Get("ids")
+		if IDs == "" {
+			errorMsg := "Empty ids parameter"
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		IDsArr := strings.Split(IDs, ",")
+		for _, ID := range IDsArr {
+			if _, err := strconv.Atoi(ID); err != nil {
+				errorMsg := "Invalid id exists in ids parameter"
+				a.logger.Error(errorMsg, zap.Error(err))
+				http.Error(w, errorMsg, http.StatusBadRequest)
+				return
+			}
+		}
+		queryParams.IDs = IDsArr
+	}
+
+	if r.URL.Query().Has("near") {
+		near := r.URL.Query().Get("near")
+		if near == "" {
+			errorMsg := "Empty near parameter"
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		nearPair := strings.Split(near, ",")
+		if len(nearPair) != 2 {
+			errorMsg := "Near parameter expects comma separated pair of float numbers"
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		resultPair := make([]float32, 2)
+		for _, nearItem := range nearPair {
+			nearItemFloat, err := strconv.ParseFloat(nearItem, 32)
+			if err != nil {
+				errorMsg := "Invalid value exists in near parameter"
+				a.logger.Error(errorMsg, zap.Error(err))
+				http.Error(w, errorMsg, http.StatusBadRequest)
+				return
+			}
+			resultPair = append(resultPair, float32(nearItemFloat))
+		}
+		queryParams.Near = resultPair
+	}
+
+	if r.URL.Query().Has("limit") {
+		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+		if err != nil {
+			errorMsg := "Invalid value for limit parameter"
+			a.logger.Error(errorMsg, zap.Error(err))
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.Limit = limit
+	}
+
+	if r.URL.Query().Has("offset") {
+		offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
+		if err != nil {
+			errorMsg := "Invalid value for offset parameter"
+			a.logger.Error(errorMsg, zap.Error(err))
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.Offset = offset
+	}
+
+	if r.URL.Query().Has("sort") {
+		sort := r.URL.Query().Get("sort")
+		if sort == "" {
+			errorMsg := "Empty sort parameter"
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.Sort = sort
+	}
+
+	rentals, err := a.rentalSvc.GetRentals(queryParams)
+	if err != nil {
+		errorMsg := "Error getting rentals"
+		a.logger.Error(errorMsg, zap.Error(err))
+		http.Error(w, errorMsg, http.StatusNotFound)
+		return
+	}
+
+	out, err := json.Marshal(rentals)
+	if err != nil {
+		errorMsg := "Error parsing rentals"
+		a.logger.Error(errorMsg, zap.Error(err))
 		http.Error(w, errorMsg, http.StatusInternalServerError)
 		return
 	}

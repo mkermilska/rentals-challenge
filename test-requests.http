@@ -8,3 +8,50 @@ GET http://localhost:59191/v1/rentals/300
 ### GET rental by ID - incorrect rentalID type
 GET http://localhost:59191/v1/rentals/3k
 
+
+
+### GET rentals
+GET http://localhost:59191/v1/rentals
+
+### GET rentals with price_min
+GET http://localhost:59191/v1/rentals
+?price_min=16000
+
+### GET rentals with incorrect price_min
+GET http://localhost:59191/v1/rentals
+?price_min=160kj00
+
+### GET rentals with price_max
+GET http://localhost:59191/v1/rentals
+?price_max=17000
+
+### GET rentals with incorrect price_max
+GET http://localhost:59191/v1/rentals
+?price_max=17k000
+
+### GET rentals with price_max, price_min
+GET http://localhost:59191/v1/rentals
+?price_max=17000
+&price_min=16000
+
+### GET rentals with ids
+GET http://localhost:59191/v1/rentals
+?ids=1,2,3
+
+### GET rentals with incorrect ids
+GET http://localhost:59191/v1/rentals
+?ids=1,2,k
+
+### GET rentals with limit
+GET http://localhost:59191/v1/rentals
+?limit=5
+
+### GET rentals with incorrect limit
+GET http://localhost:59191/v1/rentals
+?limit=k
+
+### GET rentals with limit and offset
+GET http://localhost:59191/v1/rentals
+?limit=5
+&offset=5
+

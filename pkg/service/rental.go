@@ -34,3 +34,12 @@ func (r *RentalService) GetRentalByID(rentalID int) (*apiv1.Rental, error) {
 	return apiRental, nil
 }
 
+func (r *RentalService) GetRentals(params database.RentalParams) ([]apiv1.Rental, error) {
+	rentals, err := r.rentalsRepository.FindRentals(params)
+	if err != nil {
+		r.logger.Error("Error getting rentals", zap.Error(err))
+		return nil, err
+	}
+	apiRentals := mapper.RentalsToApiRentals(rentals)
+	return apiRentals, nil
+}
