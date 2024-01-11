@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	apiv1 "github.com/mkermilska/rentals-challenge/api/v1"
+	"github.com/mkermilska/rentals-challenge/pkg/utils"
 )
 
 type Rental struct {
@@ -32,8 +33,8 @@ type Rental struct {
 	VehicleLength   float32    `db:"vehicle_length"`
 	Created         time.Time  `db:"created"`
 	Updated         time.Time  `db:"updated"`
-	Lat             float32    `db:"lat"`
-	Lng             float32    `db:"lng"`
+	Lat             float64    `db:"lat"`
+	Lng             float64    `db:"lng"`
 	PrimaryImageURL string     `db:"primary_image_url"`
 	User            apiv1.User `db:"user"`
 }
@@ -44,7 +45,7 @@ type RentalParams struct {
 	Limit    int
 	Offset   int
 	IDs      []string
-	Near     []float32 //[lat,lng]
+	Near     utils.NearBox //[lat,lng]
 	Sort     string
 }
 
@@ -112,6 +113,13 @@ func (rr *RentalsRepository) FindRentals(params RentalParams) ([]Rental, error) 
 		getRentalsQuery.WriteString(fmt.Sprintf(`AND r.id = ANY ($%d) `, argPosition))
 		args = append(args, pq.Array(params.IDs))
 		argPosition++
+	}
+
+	if params.Near.MinLat != 0 && params.Near.MaxLat != 0 {
+		getRentalsQuery.WriteString(fmt.Sprintf(`AND (lat BETWEEN $%d AND $%d) AND (lng BETWEEN $%d AND $%d)`,
+			argPosition, argPosition+1, argPosition+2, argPosition+3))
+		args = append(args, params.Near.MinLat, params.Near.MaxLat, params.Near.MinLng, params.Near.MaxLng)
+		argPosition += 4
 	}
 
 	if params.Sort != "" {

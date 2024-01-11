@@ -63,4 +63,15 @@ GET http://localhost:59191/v1/rentals
 GET http://localhost:59191/v1/rentals
 ?sort=prickgk
 
+### GET rentals with near pair
+GET http://localhost:59191/v1/rentals
+?near=33.64,-117.93
+
+### GET rentals with incorrect latitude
+GET http://localhost:59191/v1/rentals
+?near=wrong,-117.93
+
+### GET rentals with incorrect longitude
+GET http://localhost:59191/v1/rentals
+?near=33,-117.93km
 

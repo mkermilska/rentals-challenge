@@ -14,6 +14,7 @@ import (
 	apiv1 "github.com/mkermilska/rentals-challenge/api/v1"
 	"github.com/mkermilska/rentals-challenge/pkg/database"
 	"github.com/mkermilska/rentals-challenge/pkg/service"
+	"github.com/mkermilska/rentals-challenge/pkg/utils"
 )
 
 type APIServer struct {
@@ -136,24 +137,30 @@ func (a *APIServer) getRentals(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, errorMsg, http.StatusBadRequest)
 			return
 		}
-		nearPair := strings.Split(near, ",")
-		if len(nearPair) != 2 {
+		nearPoint := strings.Split(near, ",")
+		if len(nearPoint) != 2 {
 			errorMsg := "Near parameter expects comma separated pair of float numbers"
 			http.Error(w, errorMsg, http.StatusBadRequest)
 			return
 		}
-		resultPair := make([]float32, 2)
-		for _, nearItem := range nearPair {
-			nearItemFloat, err := strconv.ParseFloat(nearItem, 32)
-			if err != nil {
-				errorMsg := "Invalid value exists in near parameter"
-				a.logger.Error(errorMsg, zap.Error(err))
-				http.Error(w, errorMsg, http.StatusBadRequest)
-				return
-			}
-			resultPair = append(resultPair, float32(nearItemFloat))
+		latPoint, err := strconv.ParseFloat(nearPoint[0], 64)
+		if err != nil {
+			errorMsg := "Invalid latitude value in near parameter"
+			a.logger.Error(errorMsg, zap.Error(err))
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
 		}
-		queryParams.Near = resultPair
+		lngPoint, err := strconv.ParseFloat(nearPoint[1], 64)
+		if err != nil {
+			errorMsg := "Invalid longitude value in near parameter"
+			a.logger.Error(errorMsg, zap.Error(err))
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.Near = *utils.CalculateNearBox(utils.Point{
+			Lat: latPoint,
+			Lng: lngPoint,
+		}, 100)
 	}
 
 	if r.URL.Query().Has("limit") {
