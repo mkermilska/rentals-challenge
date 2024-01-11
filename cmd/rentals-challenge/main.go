@@ -4,6 +4,10 @@ import (
 	"github.com/alecthomas/kong"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/mkermilska/rentals-challenge/internal/web"
+	"github.com/mkermilska/rentals-challenge/pkg/database"
+	"github.com/mkermilska/rentals-challenge/pkg/service"
 )
 
 const (
@@ -34,4 +38,27 @@ func main() {
 		logger.Fatal("Failed to initialize logger. Exiting " + err.Error())
 	}
 	logger.Info("Starting rental service")
+
+	db, err := database.StartDbStore(database.StartUpOptions{
+		DBHost:     cli.DBHost,
+		DBPort:     cli.DBPort,
+		DBName:     cli.DBName,
+		DBUsername: cli.DBUsername,
+		DBPassword: cli.DBPassword,
+	})
+	if err != nil {
+		logger.Fatal("Failed to start database", zap.Error(err))
+	}
+
+	rentalsSvc := service.NewRentalService(db, logger)
+
+	server := web.New(
+		cli.HTTPPort,
+		rentalsSvc,
+		logger)
+	if err != nil {
+		logger.Fatal("Failed to start HTTP server", zap.Error(err))
+	}
+
+	server.Start()
 }

@@ -4,8 +4,10 @@ go 1.21.4
 
 require (
 	github.com/alecthomas/kong v0.8.1
+	github.com/go-chi/chi v1.5.5
 	github.com/jackc/pgx/v5 v5.5.1
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.26.0
 )
 

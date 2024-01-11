@@ -1,0 +1,10 @@
+
+### GET rental by ID
+GET http://localhost:59191/v1/rentals/3
+
+### GET rental by ID - non-existing
+GET http://localhost:59191/v1/rentals/300
+
+### GET rental by ID - incorrect rentalID type
+GET http://localhost:59191/v1/rentals/3k
+
