@@ -83,6 +83,7 @@ func (rr *RentalsRepository) FindRentalByID(rentalID int) (*Rental, error) {
 }
 
 func (rr *RentalsRepository) FindRentals(params RentalParams) ([]Rental, error) {
+	rr.logger.Debug("Getting rentals", zap.Any("rentalParams", params))
 	rentals := make([]Rental, 0)
 	args := make([]interface{}, 0)
 	argPosition := 1
