@@ -1,5 +1,22 @@
 package v1
 
+var SortsMap = map[string]string{
+	"id":          "id",
+	"name":        "name",
+	"description": "description",
+	"type":        "type",
+	"make":        "vehicle_make",
+	"model":       "vehicle_model",
+	"year":        "vehicle_year",
+	"length":      "vehicle_length",
+	"sleeps":      "sleeps",
+	"price":       "price_per_day",
+	"city":        "home_city",
+	"state":       "home_state",
+	"zip":         "home_zip",
+	"country":     "home_country",
+}
+
 type Rental struct {
 	ID              int      `json:"id"`
 	Name            string   `json:"name"`

@@ -114,6 +114,10 @@ func (rr *RentalsRepository) FindRentals(params RentalParams) ([]Rental, error) 
 		argPosition++
 	}
 
+	if params.Sort != "" {
+		getRentalsQuery.WriteString(fmt.Sprintf(`ORDER BY %s `, params.Sort))
+	}
+
 	if params.Limit != 0 {
 		getRentalsQuery.WriteString(fmt.Sprintf(`LIMIT $%d `, argPosition))
 		args = append(args, params.Limit)

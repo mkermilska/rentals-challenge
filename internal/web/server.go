@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/go-chi/chi"
+	apiv1 "github.com/mkermilska/rentals-challenge/api/v1"
 	"github.com/mkermilska/rentals-challenge/pkg/database"
 	"github.com/mkermilska/rentals-challenge/pkg/service"
 )
@@ -178,13 +179,18 @@ func (a *APIServer) getRentals(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("sort") {
-		sort := r.URL.Query().Get("sort")
-		if sort == "" {
+		sortBy := r.URL.Query().Get("sort")
+		if sortBy == "" {
 			errorMsg := "Empty sort parameter"
 			http.Error(w, errorMsg, http.StatusBadRequest)
 			return
 		}
-		queryParams.Sort = sort
+		if _, exists := apiv1.SortsMap[sortBy]; !exists {
+			errorMsg := "Sort by given column is not allowed"
+			http.Error(w, errorMsg, http.StatusBadRequest)
+			return
+		}
+		queryParams.Sort = apiv1.SortsMap[sortBy]
 	}
 
 	rentals, err := a.rentalSvc.GetRentals(queryParams)

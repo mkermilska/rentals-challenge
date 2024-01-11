@@ -55,3 +55,12 @@ GET http://localhost:59191/v1/rentals
 ?limit=5
 &offset=5
 
+### GET rentals with sort
+GET http://localhost:59191/v1/rentals
+?sort=price
+
+### GET rentals with incorrect sort
+GET http://localhost:59191/v1/rentals
+?sort=prickgk
+
+
