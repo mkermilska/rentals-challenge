@@ -76,13 +76,17 @@ http://localhost:59191/
 
 ### Tests
 
-#### Integration tests
-Run `make test` command for staring Venom integration tests. The application should be already started with `make start`.
-
-*Note: These commands could be combined in a single target as future improvement. Wait for logic needs to be added in the docker compose file.
-
 #### Manual tests 
 Set of API requests is prepared in `tests/test-requests.http`. The requests can be executed directly from the file using `Visual Studio Code` and `REST Client` extension. This is an easy option for manual testing.
+
+#### Unit tests
+Run `make unit-tests` command for starting the unit tests.
+
+#### Integration tests
+Run `make integration-tests` command for staring Venom integration tests. Integration tests require an already started application (with `make start`).
+
+*Note: These commands could be combined in a single target as future improvement.
+
 
 ### Stop the application
 `make stop` stops all running containers and clean up the resources created by run the application.

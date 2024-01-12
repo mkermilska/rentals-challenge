@@ -7,3 +7,6 @@ clear:
 
 integration-tests: 
 	docker-compose up venom
+
+unit-tests:
+	go test ./... -v 
