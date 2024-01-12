@@ -36,7 +36,7 @@ GET http://localhost:59191/v1/rentals
 
 ### GET rentals with ids
 GET http://localhost:59191/v1/rentals
-?ids=1,2,3
+?ids=1000,5000
 
 ### GET rentals with incorrect ids
 GET http://localhost:59191/v1/rentals
