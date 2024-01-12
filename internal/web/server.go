@@ -33,13 +33,16 @@ func New(port int, rentalSvc *service.RentalService, logger *zap.Logger) *APISer
 }
 
 func (a *APIServer) Start() {
-	a.logger.Info("Starting APIServer server", zap.Int("port", a.port))
+	a.logger.Info("Starting API Server", zap.Int("port", a.port))
 	a.httpServer = &http.Server{
 		Addr:              fmt.Sprintf(":%d", a.port),
 		Handler:           a.handler(),
 		ReadHeaderTimeout: 2 * time.Second,
 	}
-	a.httpServer.ListenAndServe()
+	err := a.httpServer.ListenAndServe()
+	if err != nil {
+		a.logger.Error("Error starting API Sever")
+	}
 }
 
 func (a *APIServer) handler() http.Handler {
@@ -60,7 +63,6 @@ func (a *APIServer) getRentalByID(w http.ResponseWriter, r *http.Request) {
 		a.logger.Error(errorMsg, zap.String("rentalID", chi.URLParam(r, "rentalID")), zap.Error(err))
 		http.Error(w, errorMsg, http.StatusBadRequest)
 		return
-
 	}
 
 	rental, err := a.rentalSvc.GetRentalByID(rentalID)

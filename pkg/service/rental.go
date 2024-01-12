@@ -40,6 +40,6 @@ func (r *RentalService) GetRentals(params database.RentalParams) ([]apiv1.Rental
 		r.logger.Error("Error getting rentals", zap.Error(err))
 		return nil, err
 	}
-	apiRentals := mapper.RentalsToApiRentals(rentals)
+	apiRentals := mapper.RentalsToAPIRentals(rentals)
 	return apiRentals, nil
 }

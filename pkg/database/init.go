@@ -15,7 +15,7 @@ type StartUpOptions struct {
 	DBPassword string
 }
 
-func StartDbStore(opts StartUpOptions) (*sqlx.DB, error) {
+func StartDBStore(opts StartUpOptions) (*sqlx.DB, error) {
 	db, err := sqlx.Open("pgx", fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		opts.DBUsername, opts.DBPassword, opts.DBHost, opts.DBPort, opts.DBName))
 	if err != nil {

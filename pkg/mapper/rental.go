@@ -36,7 +36,7 @@ func RentalToAPIRental(rental database.Rental) *apiv1.Rental {
 	}
 }
 
-func RentalsToApiRentals(rentals []database.Rental) []apiv1.Rental {
+func RentalsToAPIRentals(rentals []database.Rental) []apiv1.Rental {
 	apiRentals := make([]apiv1.Rental, len(rentals))
 	for i, r := range rentals {
 		rental := r

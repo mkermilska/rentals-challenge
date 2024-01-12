@@ -39,7 +39,7 @@ func main() {
 	}
 	logger.Info("Starting rental service")
 
-	db, err := database.StartDbStore(database.StartUpOptions{
+	db, err := database.StartDBStore(database.StartUpOptions{
 		DBHost:     cli.DBHost,
 		DBPort:     cli.DBPort,
 		DBName:     cli.DBName,

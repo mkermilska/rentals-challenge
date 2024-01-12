@@ -32,7 +32,7 @@ func TestMain(m *testing.M) {
 	}()
 
 	var err error
-	db, err = StartDbStore(StartUpOptions{
+	db, err = StartDBStore(StartUpOptions{
 		DBHost:     host,
 		DBPort:     port,
 		DBName:     testDBName,
