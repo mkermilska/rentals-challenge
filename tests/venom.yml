@@ -1,0 +1,126 @@
+vars:
+  URL: "http://rentals-api:59191"
+
+testcases:
+
+- name: GET /rentals/id - success
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals/3"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals/id - not found
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals/3000"
+    assertions:
+      - result.statuscode ShouldEqual 404
+- name: GET /rentals/id - invalid id parameter
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals/id30"
+    assertions:
+      - result.statuscode ShouldEqual 400
+
+- name: GET /rentals - no parameters
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals - price_min
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?price_min=16000"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals - incorrect price_min
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?price_min=1600k"
+    assertions:
+      - result.statuscode ShouldEqual 400
+- name: GET /rentals - price_max
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?price_max=80000"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals - incorrect price_max
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?price_max=80k"
+    assertions:
+      - result.statuscode ShouldEqual 400
+- name: GET /rentals - ids
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?ids=1,2,3"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals - incorrect ids
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?ids=1,2,l"
+    assertions:
+      - result.statuscode ShouldEqual 400
+- name: GET /rentals - limit and offset
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?limit=5&offset=5&sort=price"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals - incorrect limit
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?limit=k"
+    assertions:
+      - result.statuscode ShouldEqual 400
+- name: GET /rentals - incorrect sort
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?sort=size"
+    assertions:
+      - result.statuscode ShouldEqual 400
+- name: GET /rentals - near pair
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?near=33.64,-117.93"
+    assertions:
+      - result.statuscode ShouldEqual 200
+- name: GET /rentals - near with more numbers
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?near=33.64,-117.93,18"
+    assertions:
+      - result.statuscode ShouldEqual 400
+      - result.body ShouldContainSubstring Near parameter expects comma separated pair of float numbers
+- name: GET /rentals - near with incorrect lat
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?near=wrong,-117.93"
+    assertions:
+      - result.statuscode ShouldEqual 400
+- name: GET /rentals - near with incorrect lng
+  steps:
+  - type: http
+    method: GET
+    url: "{{.URL}}/v1/rentals?near=33.64,-117.93km"
+    assertions:
+      - result.statuscode ShouldEqual 400

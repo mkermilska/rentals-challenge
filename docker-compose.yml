@@ -24,3 +24,11 @@ services:
       - "59191:59191"
     depends_on:
     - postgres
+  venom:
+    image: ovhcom/venom:v1.1.0
+    volumes:
+      - ./tests:/workdir/tests
+    depends_on:
+      - rentals-api
+      - postgres
+  
